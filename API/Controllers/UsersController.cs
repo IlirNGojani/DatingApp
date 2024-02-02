@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -16,9 +17,9 @@ namespace API.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult<List<AppUser>> GetUsers()
+        public async Task<ActionResult<List<AppUser>>> GetUsers()
         {
-            return Ok(_context.Users.ToList());
+            return Ok(await _context.Users.ToListAsync());
         }
 
         [HttpGet("{id}")]
