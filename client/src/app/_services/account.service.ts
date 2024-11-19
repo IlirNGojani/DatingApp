@@ -13,6 +13,7 @@ export class AccountService {
   currentUser = signal<User | null>(null);
 
   login(model: any) {
+    debugger;
     return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
       map(user => {
         if (user) {
