@@ -35,7 +35,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == loginDTO.Username.ToLower());
+            var user = await context.Users.Include(x => x.Photos).FirstOrDefaultAsync(x => x.UserName == loginDTO.Username.ToLower());
             if (user == null) return Unauthorized("Invalid username");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -47,7 +47,12 @@ namespace API.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
             }
 
-            return new UserDTO { Username = user.UserName, Token = tokenService.CreateToken(user) };
+            return new UserDTO
+            {
+                Username = user.UserName,
+                Token = tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+            };
         }
 
         private async Task<bool> UserExists(string username)
