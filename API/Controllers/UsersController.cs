@@ -57,6 +57,8 @@ namespace API.Controllers
                 PublicId = result.PublicId
             };
 
+            if (user.Photos.Count == 0) photo.IsMain = true;
+
             user.Photos.Add(photo);
 
             if (await userRepository.SaveAllAsync())
@@ -93,7 +95,7 @@ namespace API.Controllers
             var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
             if (photo == null || photo.IsMain) return BadRequest("This photo cannot be deleted");
 
-            if(photo.PublicId != null)
+            if (photo.PublicId != null)
             {
                 var result = await photoService.DeletePhotoAsync(photo.PublicId);
                 if (result.Error != null) return BadRequest(result.Error.Message);
